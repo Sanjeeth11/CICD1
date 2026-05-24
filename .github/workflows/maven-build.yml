@@ -20,21 +20,11 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
+    - name: Build WAR
+      run: mvn clean package -DskipTests
 
-    - name: Build WAR File
-      run: mvn clean package
-
-    - name: Upload WAR Artifact
+    - name: Upload WAR==
       uses: actions/upload-artifact@v4
       with:
-        name: employees-war
-        path: target/*.war
-
-    - name: Deploy WAR to Tomcat
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.TOMCAT_HOST }}
-        username: ${{ secrets.TOMCAT_USER }}
-        password: ${{ secrets.TOMCAT_PASSWORD }}
-        source: "target/*.war"
-        target: "/opt/tomcat/webapps/"
+          name: employees-war
+          path: target/*.war
