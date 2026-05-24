@@ -1,0 +1,40 @@
+name: Build and Deploy WAR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    - name: Setup Java 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Build WAR File
+      run: mvn clean package
+
+    - name: Upload WAR Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: employees-war
+        path: target/*.war
+
+    - name: Deploy WAR to Tomcat
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.TOMCAT_HOST }}
+        username: ${{ secrets.TOMCAT_USER }}
+        password: ${{ secrets.TOMCAT_PASSWORD }}
+        source: "target/*.war"
+        target: "/opt/tomcat/webapps/"
